@@ -1,0 +1,135 @@
+// proto/order.proto
+syntax = "proto3";
+
+package order;
+
+option go_package = "internal/adapters/grpc/proto";
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string token_type = 1;
+  int64 expires_in = 2;
+  string access_token = 3;
+  string refresh_token = 4;
+  string message = 5;
+  string type = 6;
+  int32 code = 7;
+}
+
+message CreateOrderRequest {
+  int64 store_id = 1;
+  string merchant_order_id = 2;
+  string recipient_name = 3;
+  string recipient_phone = 4;
+  string recipient_address = 5;
+  int64 recipient_city = 6;
+  int64 recipient_zone = 7;
+  int64 recipient_area = 8;
+  int64 delivery_type = 9;
+  int64 item_type = 10;
+  string special_instruction = 11;
+  int64 item_quantity = 12;
+  double item_weight = 13;
+  double amount_to_collect = 14;
+  string item_description = 15;
+}
+
+message CreateOrderResponse {
+  string message = 1;
+  string type = 2;
+  int32 code = 3;
+  OrderData data = 4;
+}
+
+message OrderData {
+  string consignment_id = 1;
+  string merchant_order_id = 2;
+  string order_status = 3;
+  double delivery_fee = 4;
+}
+
+message ListOrdersRequest {
+  int64 transfer_status = 1;
+  int64 archive = 2;
+  int64 limit = 3;
+  int64 page = 4;
+}
+
+message ListOrdersResponse {
+  string message = 1;
+  string type = 2;
+  int32 code = 3;
+  OrdersData data = 4;
+}
+
+message OrdersData {
+  repeated Order orders = 1;
+  int64 total = 2;
+  int64 current_page = 3;
+  int64 per_page = 4;
+  int64 total_in_page = 5;
+  int64 last_page = 6;
+}
+
+message Order {
+  string order_consignment_id = 1;
+  string order_created_at = 2;
+  string order_description = 3;
+  string merchant_order_id = 4;
+  string recipient_name = 5;
+  string recipient_address = 6;
+  string recipient_phone = 7;
+  double order_amount = 8;
+  double total_fee = 9;
+  string instruction = 10;
+  int64 order_type_id = 11;
+  double cod_fee = 12;
+  double promo_discount = 13;
+  double discount = 14;
+  double delivery_fee = 15;
+  string order_status = 16;
+  string order_type = 17;
+  int64 item_type = 18;
+  string store_name = 19;
+  string store_contact_phone = 20;
+  double cod_amount = 21;
+  double delivery_charge = 22;
+  int64 store_id = 23;
+  int64 recipient_city = 24;
+  int64 recipient_zone = 25;
+  int64 recipient_area = 26;
+  int64 delivery_type = 27;
+  int64 item_quantity = 28;
+  double item_weight = 29;
+  double amount_to_collect = 30;
+}
+
+message CancelOrderRequest {
+  string consignment_id = 1;
+}
+
+message CancelOrderResponse {
+  string message = 1;
+  string type = 2;
+  int32 code = 3;
+}
+
+message LogoutRequest {}
+
+message LogoutResponse {
+  string message = 1;
+  string type = 2;
+  int32 code = 3;
+}
+
+service OrderService {
+  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+  rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse);
+  rpc CancelOrder(CancelOrderRequest) returns (CancelOrderResponse);
+  rpc Logout(LogoutRequest) returns (LogoutResponse);
+}
