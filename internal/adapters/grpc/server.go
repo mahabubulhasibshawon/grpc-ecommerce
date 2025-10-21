@@ -33,6 +33,18 @@ func NewServer(repo ports.OrderRepositoryPort) *Server {
 	}
 }
 
+func (s *Server) Signup(ctx context.Context, req *pb.SignupRequest) (*pb.SignupResponse, error) {
+	_ , err := s.authService.Signup(ctx, req.Username, req.Password)
+	if err != nil {
+		return &pb.SignupResponse{Message: err.Error(), Type: "error", Code: 400}, nil
+	}
+	return &pb.SignupResponse{
+		Message: "User registered successfully",
+		Type:    "success",
+		Code:    200,
+	}, nil
+}
+
 func (s *Server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
 	token, user, err := s.authService.Login(ctx, req.Username, req.Password)
 	if err != nil {
@@ -184,7 +196,7 @@ func (s *Server) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.LogoutR
 }
 
 func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	if info.FullMethod == "/order.OrderService/Login" {
+	if info.FullMethod == "/order.OrderService/Login" || info.FullMethod == "/order.OrderService/Signup" {
 		return handler(ctx, req)
 	}
 	md, ok := metadata.FromIncomingContext(ctx)

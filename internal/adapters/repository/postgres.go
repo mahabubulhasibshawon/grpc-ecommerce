@@ -18,6 +18,17 @@ type PostgresRepository struct {
 func NewPostgresRepository(db *sql.DB) ports.OrderRepositoryPort {
 	return &PostgresRepository{db: db}
 }
+func (r *PostgresRepository) CreateUser(ctx context.Context, username, hashedPassword string) (*domain.User, error) {
+	user := &domain.User{Username: username, Password: hashedPassword}
+	err := r.db.QueryRowContext(ctx, "INSERT INTO users (username, password) VALUES ($1, $2) RETURNING id", username, hashedPassword).Scan(&user.ID)
+	if err != nil {
+		if err.Error() == "pq: duplicate key value violates unique constraint \"users_username_key\"" {
+			return nil, errors.New("username already exists")
+		}
+		return nil, err
+	}
+	return user, nil
+}
 
 func (r *PostgresRepository) FindUserByUsername(ctx context.Context, username string) (*domain.User, error) {
 	user := &domain.User{}

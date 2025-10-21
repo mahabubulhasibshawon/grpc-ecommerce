@@ -7,9 +7,10 @@ import (
 	"log"
 	"net"
 	"os"
-	
+
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc"
 
 	g "github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/adapters/grpc"
@@ -37,10 +38,15 @@ func main() {
 
 	initDB(db)
 
-	_, err = db.Exec("INSERT INTO users (username, password) VALUES ($1, $2) ON CONFLICT (username) DO NOTHING",
-		"01901901901@mailinator.com", "321dsaf")
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("321dsaf"), bcrypt.DefaultCost)
 	if err != nil {
-		log.Printf("failed to insert default user: %v", err)
+		log.Printf("failed to hash default user password: %v", err)
+	} else {
+		_, err = db.Exec("INSERT INTO users (username, password) VALUES ($1, $2) ON CONFLICT (username) DO NOTHING",
+			"01901901901@mailinator.com", string(hashedPassword))
+		if err != nil {
+			log.Printf("failed to insert default user: %v", err)
+		}
 	}
 
 	repo := repository.NewPostgresRepository(db)
