@@ -63,7 +63,6 @@ func (r *PostgresRepository) ListOrders(ctx context.Context, userID int64, limit
 	if err != nil {
 		return nil, 0, err
 	}
-
 	query := `
 		SELECT consignment_id, created_at, description, merchant_order_id, recipient_name, recipient_address, recipient_phone,
 			order_amount, total_fee, instruction, order_type_id, cod_fee, promo_discount, discount, delivery_fee, status,

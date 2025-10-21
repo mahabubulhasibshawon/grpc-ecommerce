@@ -17,6 +17,9 @@ type Order struct {
 	RecipientName     string
 	RecipientAddress  string
 	RecipientPhone    string
+	RecipientCity     int64
+	RecipientZone     int64
+	RecipientArea     int64
 	OrderAmount       float64
 	TotalFee          float64
 	Instruction       string
@@ -34,9 +37,6 @@ type Order struct {
 	DeliveryCharge    float64
 	UserID            int64
 	StoreID           int64
-	RecipientCity     int64
-	RecipientZone     int64
-	RecipientArea     int64
 	DeliveryType      int64
 	ItemQuantity      int64
 	ItemWeight        float64

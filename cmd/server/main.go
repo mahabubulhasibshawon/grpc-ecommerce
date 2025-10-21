@@ -7,7 +7,7 @@ import (
 	"log"
 	"net"
 	"os"
-
+	
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"google.golang.org/grpc"
@@ -19,6 +19,9 @@ import (
 
 func main() {
 	err := godotenv.Load()
+	if err != nil {
+		log.Println("failed to load env variables", err)
+	}
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"))
 
