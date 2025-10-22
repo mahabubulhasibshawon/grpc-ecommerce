@@ -19,3 +19,9 @@ type OrderRepositoryPort interface {
 	ListOrders(ctx context.Context, userID int64, limit, page int64) ([]*domain.Order, int64, error)
 	CancelOrder(ctx context.Context, consignmentID string, userID int64) error
 }
+type CachePort interface {
+	Get(ctx context.Context, key string) ([]byte, error)
+	Set(ctx context.Context, key string, value interface{}) error
+	DeleteByPrefix(ctx context.Context, prefix string) error
+	Ping(ctx context.Context) error
+}

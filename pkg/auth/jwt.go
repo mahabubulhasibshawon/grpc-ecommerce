@@ -2,12 +2,17 @@
 package auth
 
 import (
+	"sync"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var secret = []byte("your-secret-key")
+var (
+	secret       = []byte("your-secret-key")
+	blacklist    = &sync.Map{}
+	blacklistTTL = 5 * time.Minute
+)
 
 type Claims struct {
 	Username string `json:"username"`
@@ -37,4 +42,12 @@ func ValidateToken(tokenStr string) (*Claims, error) {
 		return nil, err
 	}
 	return claims, nil
+}
+
+func BlacklistToken(tokenStr string) {
+	blacklist.Store(tokenStr, time.Now())
+	go func() {
+		time.Sleep(blacklistTTL)
+		blacklist.Delete(tokenStr)
+	}()
 }

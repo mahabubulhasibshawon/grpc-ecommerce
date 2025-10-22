@@ -53,5 +53,10 @@ func (s *AuthService) Login(ctx context.Context, username, password string) (str
 }
 
 func (s *AuthService) Logout(ctx context.Context, userID int64) error {
+	token, ok := ctx.Value("token").(string)
+	if !ok {
+		return errors.New("token not found in context")
+	}
+	auth.BlacklistToken(token)
 	return nil
 }

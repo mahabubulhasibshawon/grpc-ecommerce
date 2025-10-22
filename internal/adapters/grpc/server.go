@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	pb "github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/adapters/grpc/proto"
+	"github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/adapters/redis"
 	"github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/application"
 	"github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/domain"
 	"github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/ports"
@@ -26,10 +27,10 @@ type Server struct {
 	orderService *application.OrderService
 }
 
-func NewServer(repo ports.OrderRepositoryPort) *Server {
+func NewServer(repo ports.OrderRepositoryPort, cache *redis.Cache) *Server {
 	return &Server{
 		authService:  application.NewAuthService(repo),
-		orderService: application.NewOrderService(repo),
+		orderService: application.NewOrderService(repo, cache),
 	}
 }
 

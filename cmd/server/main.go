@@ -2,11 +2,13 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
 	"net"
 	"os"
+	"time"
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -15,6 +17,7 @@ import (
 
 	g "github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/adapters/grpc"
 	pb "github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/adapters/grpc/proto"
+	"github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/adapters/redis"
 	"github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/adapters/repository"
 )
 
@@ -36,6 +39,17 @@ func main() {
 		log.Fatalf("failed to ping DB: %v", err)
 	}
 
+	redisAddr := os.Getenv("REDIS_ADDR")
+	log.Println(redisAddr)
+	redisUsername := os.Getenv("REDIS_USERNAME")
+	redisPassword := os.Getenv("REDIS_PASSWORD")
+	redisDB := 0 // Default DB
+	cache := redis.NewCache(redisAddr, redisUsername, redisPassword, redisDB, 5*time.Minute)
+	log.Println(cache)
+	if err := cache.Ping(context.Background()); err != nil {
+		log.Fatalf("failed to connect to Redis: %v", err)
+	}
+
 	initDB(db)
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte("321dsaf"), bcrypt.DefaultCost)
@@ -50,7 +64,7 @@ func main() {
 	}
 
 	repo := repository.NewPostgresRepository(db)
-	srv := g.NewServer(repo)
+	srv := g.NewServer(repo, cache)
 
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
