@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 	"regexp"
 	"time"
 
@@ -94,18 +95,22 @@ func (s *OrderService) ListOrders(ctx context.Context, userID int64, limit, page
 		cacheKey := fmt.Sprintf("orders:user:%d:page:%d:limit:%d", userID, page, limit)
 		cached, err := s.cache.Get(ctx, cacheKey)
 		if err != nil {
-			// var orders []*domain.Order
-			// var total int64
-			type cachedData struct {
-				Orders []*domain.Order
-				Total  int64
-			}
-			var data cachedData
-			if err := json.Unmarshal(cached, &data); err == nil {
-				return data.Orders, data.Total, nil
-			}
+			// Cache miss or retrieval error
+			log.Printf("[cache miss] key=%s err=%v", cacheKey, err)
 		}
+		// Cache hit
+		type cachedData struct {
+			Orders []*domain.Order
+			Total  int64
+		}
+		var data cachedData
+		if err := json.Unmarshal(cached, &data); err != nil {
+			log.Printf("[cache unmarshal error] key=%s err=%v", cacheKey, err)
+		}
+		log.Printf("[cache hit] key=%s", cacheKey)
+		return data.Orders, data.Total, nil
 	}
+
 	// Cache miss, query database
 	orders, total, err := s.repo.ListOrders(ctx, userID, limit, page)
 	if err != nil {
