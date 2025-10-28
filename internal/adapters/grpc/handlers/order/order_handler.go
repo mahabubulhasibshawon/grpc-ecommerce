@@ -1,11 +1,20 @@
 package order
 
-import "github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/adapters/grpc"
+import (
+	"github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/application/order"
+	"github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/ports"
+)
 
 type OrderHandler struct {
-	server *grpc.Server
+	createOrderService *order.CreateOrderService
+	listOrdersService  *order.ListOrdersService
+	cancelOrderService *order.CancelOrderService
 }
 
-func NewAuthHandler(s *grpc.Server) *OrderHandler {
-	return &OrderHandler{server: s}
+func NewOrderHandler(repo ports.OrderRepositoryPort, cache ports.CachePort) *OrderHandler {
+	return &OrderHandler{
+		createOrderService: order.NewCreateOrderService(repo, cache),
+		listOrdersService:  order.NewListOrdersService(repo, cache),
+		cancelOrderService: order.NewCancelOrderService(repo, cache),
+	}
 }

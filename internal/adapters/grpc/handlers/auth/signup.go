@@ -6,7 +6,7 @@ import (
 )
 
 func (h *AuthHandler) Signup(ctx context.Context, req *pb.SignupRequest) (*pb.SignupResponse, error) {
-	_, err := h.server.AuthService.Signup(ctx, req.Username, req.Password)
+	_, err := h.signupService.Signup(ctx, req.Username, req.Password)
 	if err != nil {
 		return &pb.SignupResponse{Message: err.Error(), Type: "error", Code: 400}, nil
 	}

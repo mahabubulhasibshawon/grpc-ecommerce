@@ -15,7 +15,7 @@ func (h *OrderHandler) CancelOrder(ctx context.Context, req *pb.CancelOrderReque
 		return nil, status.Error(codes.Unauthenticated, "Unauthorized")
 	}
 
-	err = h.server.OrderService.CancelOrder(ctx, req.ConsignmentId, userID)
+	err = h.cancelOrderService.CancelOrder(ctx, req.ConsignmentId, userID)
 	if err != nil {
 		return &pb.CancelOrderResponse{Message: err.Error(), Type: "error", Code: 400}, nil
 	}

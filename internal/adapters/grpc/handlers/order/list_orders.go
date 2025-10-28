@@ -17,7 +17,7 @@ func (h *OrderHandler) ListOrders(ctx context.Context, req *pb.ListOrdersRequest
 		return nil, status.Error(codes.Unauthenticated, "Unauthorized")
 	}
 
-	orders, total, err := h.server.OrderService.ListOrders(ctx, userID, req.Limit, req.Page)
+	orders, total, err := h.listOrdersService.ListOrders(ctx, userID, req.Limit, req.Page)
 	if err != nil {
 		return &pb.ListOrdersResponse{Message: err.Error(), Type: "error", Code: 400}, nil
 	}

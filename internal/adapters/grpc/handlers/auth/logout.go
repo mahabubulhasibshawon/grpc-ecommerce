@@ -15,7 +15,7 @@ func (h *AuthHandler) Logout(ctx context.Context, req *pb.LogoutRequest) (*pb.Lo
 		return nil, status.Error(codes.Unauthenticated, "Unauthorized")
 	}
 
-	err = h.server.AuthService.Logout(ctx, userID)
+	err = h.logoutService.Logout(ctx, userID)
 	if err != nil {
 		return &pb.LogoutResponse{Message: err.Error(), Type: "error", Code: 400}, nil
 	}

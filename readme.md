@@ -31,23 +31,44 @@ order-service/
 ├── internal
 │   ├── adapters
 │   │   ├── grpc
+│   │   │   ├── auth_interceptor.go
+│   │   │   ├── handlers
+│   │   │   │   ├── auth
+│   │   │   │   │   ├── auth_handler.go
+│   │   │   │   │   ├── login.go
+│   │   │   │   │   ├── logout.go
+│   │   │   │   │   └── signup.go
+│   │   │   │   └── order
+│   │   │   │       ├── cancel_order.go
+│   │   │   │       ├── create_order.go
+│   │   │   │       ├── list_orders.go
+│   │   │   │       └── order_handler.go
 │   │   │   ├── proto
 │   │   │   │   ├── order_grpc.pb.go
 │   │   │   │   ├── order.pb.go
 │   │   │   │   └── order.proto
 │   │   │   └── server.go
+│   │   ├── redis
+│   │   │   └── redis.go
 │   │   └── repository
 │   │       └── postgres.go
 │   ├── application
 │   │   ├── auth_service.go
 │   │   └── order_service.go
+│   ├── config
+│   │   └── config.go
 │   ├── domain
 │   │   └── models.go
+│   ├── infrastructure
+│   │   ├── db.go
+│   │   ├── migrate.go
+│   │   └── redis.go
 │   └── ports
 │       └── ports.go
 ├── note-task.png
 ├── pkg
 │   └── auth
+│       ├── get_userId_from_context.go
 │       └── jwt.go
 ├── readme.md
 └── Task_ Software Engineer (GoLang).md
@@ -353,6 +374,37 @@ The service exposes the following gRPC endpoints under the `order.OrderService` 
 - **JWT Secret**: Currently hardcoded (`your-secret-key`). In production, configure via environment variables.
 - **Logout**: Currently a placeholder; implement token blacklisting in production for proper session invalidation.
 - **Database**: Uses PostgreSQL with SSL disabled (`sslmode=disable`). Enable SSL in production.
+
+## Dependency Flow
+       +-----------------------------+
+       |        External World       |
+       |  (gRPC, HTTP, CLI, etc.)    |
+       +--------------+--------------+
+                      |
+                      v
+        +-------------+-------------+
+        |        Adapters (in)      |
+        |       (Handlers)          |
+        +-------------+-------------+
+                      |
+                      v
+        +-------------+-------------+
+        |      Application Layer    |
+        |  (Use cases / Services)   |
+        +-------------+-------------+
+                      |
+                      v
+        +-------------+-------------+
+        |       Domain Entities     |
+        |      (Business Logic)     |
+        +-------------+-------------+
+                      |
+                      v
+        +-------------+-------------+
+        |      Adapters (out)       |
+        | (Repositories, Cache, etc)|
+        +----------------------------+
+
 
 ## Notes
 - A default user (`01901901901@mailinator.com` / `321dsaf`) is inserted on startup with a hashed password for testing.

@@ -1,4 +1,3 @@
-// internal/adapters/repository/postgres.go
 package repository
 
 import (

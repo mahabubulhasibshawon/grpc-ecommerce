@@ -1,4 +1,3 @@
-// internal/ports/ports.go
 package ports
 
 import (

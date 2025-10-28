@@ -1,11 +1,20 @@
 package auth
 
-import "github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/adapters/grpc"
+import (
+	"github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/application/auth"
+	"github.com/mahabubulhasibshawon/grpc-ecommerce.git/internal/ports"
+)
 
 type AuthHandler struct {
-	server *grpc.Server
+	signupService *auth.SignupService
+	loginService  *auth.LoginService
+	logoutService *auth.LogoutService
 }
 
-func NewAuthHandler(s *grpc.Server) *AuthHandler {
-	return &AuthHandler{server: s}
+func NewAuthHandler(repo ports.OrderRepositoryPort) *AuthHandler {
+	return &AuthHandler{
+		signupService: auth.NewSignupService(repo),
+		loginService:  auth.NewLoginService(repo),
+		logoutService: auth.NewLogoutService(),
+	}
 }

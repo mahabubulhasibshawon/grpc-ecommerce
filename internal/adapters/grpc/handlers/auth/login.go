@@ -8,7 +8,7 @@ import (
 )
 
 func (h *AuthHandler) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
-	token, user, err := h.server.AuthService.Login(ctx, req.Username, req.Password)
+	token, user, err := h.loginService.Login(ctx, req.Username, req.Password)
 	if err != nil {
 		return &pb.LoginResponse{Message: "Invalid credentials", Type: "error", Code: 400}, nil
 	}

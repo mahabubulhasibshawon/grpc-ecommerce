@@ -1,4 +1,3 @@
-// adapters/redis/redis.go
 package redis
 
 import (

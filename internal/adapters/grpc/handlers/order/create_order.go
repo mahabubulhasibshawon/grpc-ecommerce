@@ -34,7 +34,7 @@ func (h *OrderHandler) CreateOrder(ctx context.Context, req *pb.CreateOrderReque
 		Description:      req.ItemDescription,
 	}
 
-	created, err := h.server.OrderService.CreateOrder(ctx, order, userID)
+	created, err := h.createOrderService.CreateOrder(ctx, order, userID)
 	if err != nil {
 		return &pb.CreateOrderResponse{Message: err.Error(), Type: "error", Code: 422}, nil
 	}
